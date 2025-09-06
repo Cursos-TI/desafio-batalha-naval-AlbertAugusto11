@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+// ESTA É MINHA ENTREGA IMPLEMENTEI FUNCIONALIDADES EXTRAS
+// AUMENTEI O TAMANHO DO TABULEIRO, ENTRE OUTRAS COISAS
+
 int posicao_e_valida(int *posicoes, int length)
 {
     for (int i = 0; i < length - 3; i += 2)
@@ -41,7 +44,7 @@ int esta_dentro(int tamanhoLinha, int tamanhoColuna, int *posicoes, int length)
     return 1;
 }
 
-int esta_livre(int (*matriz)[10], int *posicoes, int length)
+int esta_livre(int (*matriz)[15], int *posicoes, int length)
 {
     if (length % 2 != 0)
         return 0; // Garante que há pares completos
@@ -57,7 +60,7 @@ int esta_livre(int (*matriz)[10], int *posicoes, int length)
     return 1;
 }
 
-int posicionando(int (*matriz)[10], int *posicoes, int length, int posicao_valida, int esta_dentro, int esta_livre, int *barco)
+int posicionando(int (*matriz)[15], int *posicoes, int length, int posicao_valida, int esta_dentro, int esta_livre, int *barco)
 {
     if (!posicao_valida)
     {
@@ -88,7 +91,52 @@ int posicionando(int (*matriz)[10], int *posicoes, int length, int posicao_valid
     return 1;
 }
 
-void imprimirTabuleiro(int (*matriz)[10], int tamanhoLinha, int tamanhoColuna)
+int lancarPoderes(int (*matrizMaior)[15], int (*matrizMenor)[5], int linhaInicial, int colunaInicial)
+{
+    int atingidos = 0;
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            // Calcula posição destino
+            int linhaDestino = linhaInicial + i;
+            int colunaDestino = colunaInicial + j;
+
+            // Verifica se está dentro dos limites da matriz maior
+            if (linhaDestino >= 0 && linhaDestino < 15 &&
+                colunaDestino >= 0 && colunaDestino < 15 &&
+                matrizMenor[i][j] == 1)
+            {
+
+                if (matrizMaior[linhaDestino][colunaDestino] == 3)
+                {
+                    atingidos++;
+                }
+
+                matrizMaior[linhaDestino][colunaDestino] = 1;
+            }
+        }
+    }
+
+    return atingidos;
+}
+
+void limparAtaques(int (*matriz)[15], int tamanhoLinha, int tamanhoColuna)
+{
+    for (int i = 0; i < tamanhoLinha; i++)
+    {
+        for (int j = 0; j < tamanhoColuna; j++)
+        {
+            if (matriz[i][j] == 1)
+            {
+                matriz[i][j] = 0;
+            }
+        }
+    }
+}
+
+void imprimirTabuleiro(int (*matriz)[15], int tamanhoLinha, int tamanhoColuna)
 {
     for (int i = 0; i < tamanhoLinha; i++)
     {
@@ -102,19 +150,8 @@ void imprimirTabuleiro(int (*matriz)[10], int tamanhoLinha, int tamanhoColuna)
 
 int main()
 {
-    // Tabuleiro 10x10
-    int tabuleiro[10][10] = {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-    };
+    // Tabuleiro 15x15
+    int tabuleiro[15][15] = {0};
 
     // Capturando o Tamanho das linhas e Colunas
     int tamanho_linhas = sizeof(tabuleiro) / sizeof(tabuleiro[0]);
@@ -152,8 +189,82 @@ int main()
     int z4 = esta_livre(tabuleiro, posicoes4, (sizeof(posicoes4) / sizeof(posicoes4[0])));
     posicionando(tabuleiro, posicoes4, (sizeof(posicoes4) / sizeof(posicoes4[0])), x4, y4, z4, navio4);
 
-    // Imprimindo o Tabuleiro
+    // Informações do 1º PORTA-AVIÃO
+    int porta_aviao1[5] = {3, 3, 3, 3, 3};
+    int posicoes5[10] = {0, 5, 0, 6, 0, 7, 0, 8, 0, 9};
+    int x5 = posicao_e_valida(posicoes5, (sizeof(posicoes5) / sizeof(posicoes5[0])));
+    int y5 = esta_dentro(tamanho_linhas, tamanho_colunas, posicoes5, (sizeof(posicoes5) / sizeof(posicoes5[0])));
+    int z5 = esta_livre(tabuleiro, posicoes5, (sizeof(posicoes5) / sizeof(posicoes5[0])));
+    posicionando(tabuleiro, posicoes5, (sizeof(posicoes5) / sizeof(posicoes5[0])), x5, y5, z5, porta_aviao1);
+
+    // Informações do 2º PORTA-AVIÃO
+    int porta_aviao2[5] = {3, 3, 3, 3, 3};
+    int posicoes6[10] = {3, 14, 4, 14, 5, 14, 6, 14, 7, 14};
+    int x6 = posicao_e_valida(posicoes6, (sizeof(posicoes6) / sizeof(posicoes6[0])));
+    int y6 = esta_dentro(tamanho_linhas, tamanho_colunas, posicoes6, (sizeof(posicoes6) / sizeof(posicoes6[0])));
+    int z6 = esta_livre(tabuleiro, posicoes6, (sizeof(posicoes6) / sizeof(posicoes6[0])));
+    posicionando(tabuleiro, posicoes6, (sizeof(posicoes6) / sizeof(posicoes6[0])), x6, y6, z6, porta_aviao2);
+
+    int hab_cruz[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0}};
+
+    int atingidos1 = lancarPoderes(tabuleiro, hab_cruz, 0, 5);
     imprimirTabuleiro(tabuleiro, tamanho_linhas, tamanho_colunas);
+    printf("Alvos atingidos com a habilidade Cruz = %d\n\n", atingidos1);
+    limparAtaques(tabuleiro, tamanho_linhas, tamanho_colunas);
+
+    int hab_losango[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 1, 1, 1, 0},
+        {0, 0, 1, 0, 0}};
+
+    int atingidos2 = lancarPoderes(tabuleiro, hab_losango, 3, 3);
+    imprimirTabuleiro(tabuleiro, tamanho_linhas, tamanho_colunas);
+    printf("Alvos atingidos com a habilidade Losango = %d\n\n", atingidos2);
+    limparAtaques(tabuleiro, tamanho_linhas, tamanho_colunas);
+
+    int hab_cone[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0}};
+
+    int atingidos3 = lancarPoderes(tabuleiro, hab_cone, 0, 0);
+    imprimirTabuleiro(tabuleiro, tamanho_linhas, tamanho_colunas);
+    printf("Alvos atingidos com a habilidade Cone = %d\n\n", atingidos3);
+    limparAtaques(tabuleiro, tamanho_linhas, tamanho_colunas);
+
+    int hab_flecha[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0}};
+
+    int atingidos4 = lancarPoderes(tabuleiro, hab_flecha, 7, 7);
+    imprimirTabuleiro(tabuleiro, tamanho_linhas, tamanho_colunas);
+    printf("Alvos atingidos com a habilidade Flecha = %d\n\n", atingidos4);
+    limparAtaques(tabuleiro, tamanho_linhas, tamanho_colunas);
+
+    int hab_MASTER[5][5] = {
+        {1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1},
+    };
+
+    int atingidos5 = lancarPoderes(tabuleiro, hab_MASTER, 10, 10);
+    imprimirTabuleiro(tabuleiro, tamanho_linhas, tamanho_colunas);
+    printf("Alvos atingidos com a habilidade MASTER = %d\n\n", atingidos5);
+    limparAtaques(tabuleiro, tamanho_linhas, tamanho_colunas);
 
     return 0;
 }
